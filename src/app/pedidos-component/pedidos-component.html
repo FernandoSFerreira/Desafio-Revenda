@@ -1,0 +1,94 @@
+<div class="container mt-4">
+    <h1>Gerenciamento de Pedidos</h1>
+
+    <!-- Botão Adicionar -->
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#adicionarPedidoModal">
+        Adicionar Pedido
+    </button>
+
+    <!-- Tabela de Pedidos -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Revenda</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Observações</th>
+                <th>Quantidade Total</th>
+                <th>Valor Total</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let pedido of pedidos">
+                <td>{{ pedido.id }}</td>
+                <td>{{ pedido.revendaId }}</td>
+                <td>{{ pedido.dataPedido | date: 'dd/MM/yyyy' }}</td>
+                <td>{{ pedido.status }}</td>
+                <td>{{ pedido.observacoes }}</td>
+                <td>{{ pedido.quantidadeTotal }}</td>
+                <td>{{ pedido.valorTotal | currency: 'BRL' }}</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-info" (click)="selecionarPedidoParaEdicao(pedido)">Editar</button>
+                    <button type="button" class="btn btn-sm btn-danger" (click)="excluirPedido(pedido.id)">Excluir</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Modal Adicionar Pedido -->
+    <div class="modal fade" id="adicionarPedidoModal" tabindex="-1" aria-labelledby="adicionarPedidoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="adicionarPedidoModalLabel">Adicionar Novo Pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="revendaId" class="form-label">Revenda ID</label>
+                            <input type="text" id="revendaId" name="revendaId" class="form-control" [(ngModel)]="novoPedido.revendaId">
+                        </div>
+                        <div class="mb-3">
+                            <label for="dataPedido" class="form-label">Data do Pedido</label>
+                            <input type="date" id="dataPedido" name="dataPedido" class="form-control" [(ngModel)]="novoPedido.dataPedido">
+                        </div>
+                        <div class="mb-3">
+                            <label for="observacoes" class="form-label">Observações</label>
+                            <textarea id="observacoes" name="observacoes" class="form-control" [(ngModel)]="novoPedido.observacoes"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="itens" class="form-label">Itens do Pedido</label>
+                            <input type="text" id="itens" name="itens" class="form-control" [(ngModel)]="novoPedido.itens">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="adicionarPedido()">Adicionar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Pedido -->
+    <div class="modal fade" id="editarPedidoModal" tabindex="-1" aria-labelledby="editarPedidoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarPedidoModalLabel">Editar Pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Preencher com os campos do pedido selecionado -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="atualizarPedido()">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

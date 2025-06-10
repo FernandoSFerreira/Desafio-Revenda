@@ -1,0 +1,48 @@
+<div class="login-container">
+    <div class="login-card">
+      <h2>Login</h2>
+      
+      <!-- Exibir erro se houver -->
+      <div *ngIf="error" class="alert alert-danger">
+        {{ error }}
+      </div>
+      
+      <form (ngSubmit)="onSubmit()">
+        <!-- Campo Username -->
+        <div class="form-group">
+          <label for="username">Usuário:</label>
+          <input 
+            type="text" 
+            id="username"
+            name="username" 
+            [(ngModel)]="usuario.username" 
+            class="form-control"
+            required
+            [disabled]="loading">
+        </div>
+        
+        <!-- Campo Password -->
+        <div class="form-group">
+          <label for="password">Senha:</label>
+          <input 
+            type="password" 
+            id="password"
+            name="password" 
+            [(ngModel)]="usuario.password" 
+            class="form-control"
+            required
+            [disabled]="loading">
+        </div>
+        
+        <!-- Botão Submit -->
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="loading || !usuario.username || !usuario.password">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+          {{ loading ? 'Entrando...' : 'Entrar' }}
+        </button>
+      </form>
+    </div>
+  </div>
+

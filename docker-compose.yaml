@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  pedidos-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pedidos-frontend
+    ports:
+      - "4200:80"

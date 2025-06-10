@@ -1,0 +1,33 @@
+.nav-item a {
+  cursor: pointer;
+}
+
+.navbar-brand{
+  margin-left: 1rem;
+}
+.nav-link.active {
+    background-color: #2563eb;
+    color: #fff !important;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+  .app-container {
+    min-height: 100vh;
+  }
+  
+  .main-content {
+    padding: 0;
+    
+    &.with-menu {
+      padding-top: 0; // Ajuste conforme necessário
+    }
+  }
+  
+  // Para páginas de login sem menu
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+  }

@@ -1,0 +1,74 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../Service/auth-service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './login-component.html',
+  styleUrls: ['./login-component.scss']
+})
+export class LoginComponent {
+  // Objeto usuario
+  usuario = {
+    username: '',
+    password: ''
+  };
+  
+    private apiUrl = environment.apiUrl+'/Auth';
+  
+  loading = false;
+  error = '';
+
+  constructor(
+    private authService: AuthService,
+    private http: HttpClient
+  ) {}
+
+  // Método handleSubmit para compatibilidade com o template existente
+  async handleSubmit(event?: Event): Promise<void> {
+    if (event) {
+      event.preventDefault();
+    }
+
+    if (!this.usuario.username || !this.usuario.password) {
+      this.error = 'Por favor, preencha todos os campos';
+      return;
+    }
+
+    this.loading = true;
+    this.error = '';
+
+    try {
+      // Substitua pela sua URL de login real
+      const response: any = await this.http.post(this.apiUrl+'/login', {
+        username: this.usuario.username,
+        password: this.usuario.password
+      }).toPromise();
+
+      if (response && response.token) {
+        // Use o serviço de autenticação para fazer login
+        this.authService.login(response.token);
+        
+        // Limpa o formulário após login bem-sucedido
+        this.usuario = { username: '', password: '' };
+      } else {
+        this.error = 'Credenciais inválidas';
+      }
+    } catch (error: any) {
+      console.error('Erro no login:', error);
+      this.error = error.error?.message || 'Erro ao fazer login. Tente novamente.';
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  // Método alternativo onSubmit (caso você queira usar este no template)
+  async onSubmit(): Promise<void> {
+    await this.handleSubmit();
+  }
+}
