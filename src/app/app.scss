@@ -6,28 +6,77 @@
   margin-left: 1rem;
 }
 .nav-link.active {
-    background-color: #2563eb;
-    color: #fff !important;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-  }
-  .app-container {
-    min-height: 100vh;
-  }
+  background-color: #2563eb;
+  color: #fff !important;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+.app-container {
+  min-height: 100vh;
+}
   
-  .main-content {
-    padding: 0;
-    
-    &.with-menu {
-      padding-top: 0; // Ajuste conforme necessário
-    }
-  }
+.main-content {
+  padding: 0;
   
-  // Para páginas de login sem menu
-  .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f8f9fa;
+  &.with-menu {
+    padding-top: 0;
   }
+}
+  
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+
+p {
+  margin: 0;
+  color: var(--gray-700);
+}
+
+main {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  box-sizing: inherit;
+  position: relative;
+}
+
+.angular-logo {
+  max-width: 8rem;
+}
+
+.content {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 3rem;
+}
+
+.divider {
+  width: 1px;
+  background: var(--red-to-pink-to-purple-vertical-gradient);
+  margin-inline: 0.5rem;
+}
+
+
+@media screen and (max-width: 650px) {
+  .content {
+    flex-direction: column;
+    width: max-content;
+  }
+
+  .divider {
+    height: 1px;
+    width: 100%;
+    background: var(--red-to-pink-to-purple-horizontal-gradient);
+    margin-block: 1.5rem;
+  }
+}

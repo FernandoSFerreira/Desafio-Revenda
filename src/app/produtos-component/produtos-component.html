@@ -1,1 +1,120 @@
-<p>produtos-component works!</p>
+<div class="container mt-4">
+    <h1>Gerenciamento de Produtos</h1>
+
+    <!-- Debug: Mostrar quantos produtos foram carregados -->
+    <div class="alert alert-info" *ngIf="produtos.length === 0">
+        Nenhum produto encontrado. Verifique a conexão com a API.
+    </div>
+    <div class="alert alert-success" *ngIf="produtos.length > 0">
+        {{ produtos.length }} produto(s) carregado(s) com sucesso.
+    </div>
+
+    <!-- Botão Adicionar -->
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#adicionarProdutoModal">
+        Adicionar Produto
+    </button>
+
+    <!-- Tabela de Produtos -->
+    <div class="table-responsive">
+        <table class="table table-striped" *ngIf="produtos.length > 0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Preço</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let produto of produtos; trackBy: trackByProdutoId">
+                    <td>{{ produto.id }}</td>
+                    <td>{{ produto.nome }}</td>
+                    <td>{{ produto.descricao }}</td>
+                    <td>{{ produto.preco | currency: 'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-info" (click)="selecionarProdutoParaEdicao(produto)">
+                                Editar
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" (click)="excluirProduto(produto.id)">
+                                Excluir
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Adicionar Produto -->
+    <div class="modal fade" id="adicionarProdutoModal" tabindex="-1" aria-labelledby="adicionarProdutoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="adicionarProdutoModalLabel">Adicionar Novo Produto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form #adicionarProdutoForm="ngForm">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome *</label>
+                            <input type="text" id="nome" name="nome" class="form-control" [(ngModel)]="novoProduto.nome" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição *</label>
+                            <textarea id="descricao" name="descricao" class="form-control" rows="3" [(ngModel)]="novoProduto.descricao" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="preco" class="form-label">Preço *</label>
+                            <input type="number" id="preco" name="preco" class="form-control" [(ngModel)]="novoProduto.preco" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="adicionarProduto()" [disabled]="!novoProduto.nome || !novoProduto.descricao || !novoProduto.preco">
+                        Adicionar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Produto -->
+    <div class="modal fade" id="editarProdutoModal" tabindex="-1" aria-labelledby="editarProdutoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarProdutoModalLabel">Editar Produto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" *ngIf="produtoSelecionado">
+                    <div class="alert alert-info">
+                        <small>Editando produto ID: {{ produtoSelecionado.id }}</small>
+                    </div>
+                    <form #editarProdutoForm="ngForm">
+                        <div class="mb-3">
+                            <label for="editNome" class="form-label">Nome *</label>
+                            <input type="text" id="editNome" name="editNome" class="form-control" [(ngModel)]="produtoSelecionado.nome" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDescricao" class="form-label">Descrição *</label>
+                            <textarea id="editDescricao" name="editDescricao" class="form-control" rows="3" [(ngModel)]="produtoSelecionado.descricao" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPreco" class="form-label">Preço *</label>
+                            <input type="number" id="editPreco" name="editPreco" class="form-control" [(ngModel)]="produtoSelecionado.preco" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="cancelarEdicao()">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="atualizarProduto()" [disabled]="!produtoSelecionado?.nome || !produtoSelecionado?.descricao || !produtoSelecionado?.preco">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

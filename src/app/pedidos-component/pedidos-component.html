@@ -1,73 +1,128 @@
 <div class="container mt-4">
     <h1>Gerenciamento de Pedidos</h1>
 
+    <!-- Debug: Mostrar quantos pedidos foram carregados -->
+    <div class="alert alert-info" *ngIf="pedidos.length === 0">
+        Nenhum pedido encontrado. Verifique a conexão com a API.
+    </div>
+    <div class="alert alert-success" *ngIf="pedidos.length > 0">
+        {{ pedidos.length }} pedido(s) carregado(s) com sucesso.
+    </div>
+
     <!-- Botão Adicionar -->
     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#adicionarPedidoModal">
         Adicionar Pedido
     </button>
 
     <!-- Tabela de Pedidos -->
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Revenda</th>
-                <th>Data</th>
-                <th>Status</th>
-                <th>Observações</th>
-                <th>Quantidade Total</th>
-                <th>Valor Total</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let pedido of pedidos">
-                <td>{{ pedido.id }}</td>
-                <td>{{ pedido.revendaId }}</td>
-                <td>{{ pedido.dataPedido | date: 'dd/MM/yyyy' }}</td>
-                <td>{{ pedido.status }}</td>
-                <td>{{ pedido.observacoes }}</td>
-                <td>{{ pedido.quantidadeTotal }}</td>
-                <td>{{ pedido.valorTotal | currency: 'BRL' }}</td>
-                <td>
-                    <button type="button" class="btn btn-sm btn-info" (click)="selecionarPedidoParaEdicao(pedido)">Editar</button>
-                    <button type="button" class="btn btn-sm btn-danger" (click)="excluirPedido(pedido.id)">Excluir</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table table-striped" *ngIf="pedidos.length > 0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Revenda ID</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th>Observações</th>
+                    <th>Quantidade Total</th>
+                    <th>Valor Total</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let pedido of pedidos; trackBy: trackByPedidoId">
+                    <td>{{ pedido.id }}</td>
+                    <td>{{ pedido.revendaId }}</td>
+                    <td>{{ pedido.dataPedido | date: 'dd/MM/yyyy HH:mm' }}</td>
+                    <td>
+                        <span class="badge" 
+                              [ngClass]="{
+                                'bg-warning': pedido.status === 'Pendente',
+                                'bg-success': pedido.status === 'Confirmado',
+                                'bg-danger': pedido.status === 'Cancelado',
+                                'bg-info': pedido.status === 'Em Processamento',
+                                'bg-primary': pedido.status === 'Enviado'
+                              }">
+                            {{ pedido.status }}
+                        </span>
+                    </td>
+                    <td>{{ pedido.observacoes || 'N/A' }}</td>
+                    <td>{{ pedido.quantidadeTotal }}</td>
+                    <td>{{ pedido.valorTotal | currency: 'BRL':'symbol':'1.2-2':'pt-BR' }}</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <button type="button" 
+                                    class="btn btn-sm btn-info" 
+                                    (click)="selecionarPedidoParaEdicao(pedido)"
+                                    [attr.data-pedido-id]="pedido.id">
+                                Editar
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" (click)="excluirPedido(pedido.id)">
+                                Excluir
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
     <!-- Modal Adicionar Pedido -->
     <div class="modal fade" id="adicionarPedidoModal" tabindex="-1" aria-labelledby="adicionarPedidoModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="adicionarPedidoModalLabel">Adicionar Novo Pedido</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form #adicionarForm="ngForm">
                         <div class="mb-3">
-                            <label for="revendaId" class="form-label">Revenda ID</label>
-                            <input type="text" id="revendaId" name="revendaId" class="form-control" [(ngModel)]="novoPedido.revendaId">
+                            <label for="revendaId" class="form-label">Revenda ID *</label>
+                            <input type="text" 
+                                   id="revendaId" 
+                                   name="revendaId" 
+                                   class="form-control" 
+                                   [(ngModel)]="novoPedido.revendaId"
+                                   required>
                         </div>
                         <div class="mb-3">
-                            <label for="dataPedido" class="form-label">Data do Pedido</label>
-                            <input type="date" id="dataPedido" name="dataPedido" class="form-control" [(ngModel)]="novoPedido.dataPedido">
+                            <label for="dataPedido" class="form-label">Data do Pedido *</label>
+                            <input type="datetime-local" 
+                                   id="dataPedido" 
+                                   name="dataPedido" 
+                                   class="form-control" 
+                                   [(ngModel)]="novoPedido.dataPedido"
+                                   required>
                         </div>
                         <div class="mb-3">
                             <label for="observacoes" class="form-label">Observações</label>
-                            <textarea id="observacoes" name="observacoes" class="form-control" [(ngModel)]="novoPedido.observacoes"></textarea>
+                            <textarea id="observacoes" 
+                                      name="observacoes" 
+                                      class="form-control" 
+                                      rows="3"
+                                      [(ngModel)]="novoPedido.observacoes"
+                                      placeholder="Digite as observações do pedido..."></textarea>
                         </div>
                         <div class="mb-3">
                             <label for="itens" class="form-label">Itens do Pedido</label>
-                            <input type="text" id="itens" name="itens" class="form-control" [(ngModel)]="novoPedido.itens">
+                            <textarea id="itens" 
+                                      name="itens" 
+                                      class="form-control" 
+                                      rows="2"
+                                      [(ngModel)]="novoPedido.itens"
+                                      placeholder="Digite os itens do pedido..."></textarea>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" (click)="adicionarPedido()">Adicionar</button>
+                    <button type="button" 
+                            class="btn btn-primary" 
+                            (click)="adicionarPedido()"
+                            [disabled]="!novoPedido.revendaId || !novoPedido.dataPedido">
+                        Adicionar
+                    </button>
                 </div>
             </div>
         </div>
@@ -75,18 +130,87 @@
 
     <!-- Modal Editar Pedido -->
     <div class="modal fade" id="editarPedidoModal" tabindex="-1" aria-labelledby="editarPedidoModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editarPedidoModalLabel">Editar Pedido</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <!-- Preencher com os campos do pedido selecionado -->
+                <div class="modal-body" *ngIf="pedidoSelecionado">
+                    <div class="alert alert-info">
+                        <small>Editando pedido ID: {{ pedidoSelecionado.id }}</small>
+                    </div>
+                    <form #editarForm="ngForm">
+                        <div class="mb-3">
+                            <label for="editRevendaId" class="form-label">Revenda ID *</label>
+                            <input type="text" 
+                                   id="editRevendaId" 
+                                   name="editRevendaId" 
+                                   class="form-control" 
+                                   [(ngModel)]="pedidoSelecionado.revendaId"
+                                   required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDataPedido" class="form-label">Data do Pedido *</label>
+                            <input type="datetime-local" 
+                                   id="editDataPedido" 
+                                   name="editDataPedido" 
+                                   class="form-control" 
+                                   [(ngModel)]="pedidoSelecionado.dataPedido"
+                                   required disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editStatus" class="form-label">Status</label>
+                            <select id="editStatus" 
+                                    name="editStatus" 
+                                    class="form-select" 
+                                    [(ngModel)]="pedidoSelecionado.status">
+                                <option value="Pendente">Pendente</option>
+                                <option value="Confirmado">Confirmado</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editObservacoes" class="form-label">Observações</label>
+                            <textarea id="editObservacoes" 
+                                      name="editObservacoes" 
+                                      class="form-control" 
+                                      rows="3"
+                                      [(ngModel)]="pedidoSelecionado.observacoes"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="editQuantidadeTotal" class="form-label">Quantidade Total</label>
+                                <input type="number" 
+                                       id="editQuantidadeTotal" 
+                                       name="editQuantidadeTotal" 
+                                       class="form-control" 
+                                       [(ngModel)]="pedidoSelecionado.quantidadeTotal"
+                                       min="0"
+                                       disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editValorTotal" class="form-label">Valor Total</label>
+                                <input type="number" 
+                                       id="editValorTotal" 
+                                       name="editValorTotal" 
+                                       class="form-control" 
+                                       [(ngModel)]="pedidoSelecionado.valorTotal"
+                                       min="0"
+                                       step="0.01"
+                                       disabled>
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" (click)="atualizarPedido()">Salvar Alterações</button>
+                    <button type="button" class="btn btn-secondary" (click)="cancelarEdicao()">Cancelar</button>
+                    <button type="button" 
+                            class="btn btn-primary" 
+                            (click)="atualizarPedido()"
+                            [disabled]="!pedidoSelecionado?.revendaId || !pedidoSelecionado?.dataPedido">
+                        Salvar Alterações
+                    </button>
                 </div>
             </div>
         </div>

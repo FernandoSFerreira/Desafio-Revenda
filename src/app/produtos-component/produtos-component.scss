@@ -1,0 +1,30 @@
+.table-responsive {
+    overflow-x: auto;
+  }
+  
+  .table {
+    th, td {
+      text-align: center;
+      vertical-align: middle;
+    }
+  }
+  
+  .btn-group {
+    .btn {
+      margin: 2px;
+    }
+  }
+  
+  .modal-header {
+    background-color: #f8f9fa;
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .alert-info {
+    font-size: 14px;
+    padding: 10px;
+  }
