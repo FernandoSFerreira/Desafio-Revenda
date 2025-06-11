@@ -1,1 +1,108 @@
-<p>usuarios-component works!</p>
+<div class="container mt-4">
+    <h1>Gerenciamento de Usuários</h1>
+
+    <!-- Debug: Mostrar quantos usuarios foram carregados -->
+    <div class="alert alert-info" *ngIf="usuarios.length === 0">
+        Nenhum usuario encontrado. Verifique a conexão com a API.
+    </div>
+    <div class="alert alert-success" *ngIf="usuarios.length > 0">
+        {{ usuarios.length }} usuario(s) carregado(s) com sucesso.
+    </div>
+
+    <!-- Botão Adicionar -->
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#adicionarUsuarioModal">
+        Adicionar Usuário
+    </button>
+
+    <!-- Tabela de Usuários -->
+    <div class="table-responsive">
+        <table class="table table-striped" *ngIf="usuarios.length > 0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let usuario of usuarios; trackBy: trackByUsuarioId">
+                    <td>{{ usuario.id }}</td>
+                    <td>{{ usuario.username }}</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-info" (click)="selecionarUsuarioParaEdicao(usuario)">
+                                Editar
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" (click)="excluirUsuario(usuario.id)">
+                                Excluir
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal Adicionar Usuário -->
+    <div class="modal fade" id="adicionarUsuarioModal" tabindex="-1" aria-labelledby="adicionarUsuarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="adicionarUsuarioModalLabel">Adicionar Novo Usuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form #adicionarUsuarioForm="ngForm">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username *</label>
+                            <input type="text" id="username" name="username" class="form-control" [(ngModel)]="novoUsuario.username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Senha *</label>
+                            <input type="password" id="password" name="password" class="form-control" [(ngModel)]="novoUsuario.password" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="adicionarUsuario()" [disabled]="!novoUsuario.username || !novoUsuario.password">
+                        Adicionar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Usuário -->
+    <div class="modal fade" id="editarUsuarioModal" tabindex="-1" aria-labelledby="editarUsuarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarUsuarioModalLabel">Editar Usuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" *ngIf="usuarioSelecionado">
+                    <div class="alert alert-info">
+                        <small>Editando usuário ID: {{ usuarioSelecionado.id }}</small>
+                    </div>
+                    <form #editarUsuarioForm="ngForm">
+                        <div class="mb-3">
+                            <label for="editUsername" class="form-label">Username *</label>
+                            <input type="text" id="editUsername" name="editUsername" class="form-control" [(ngModel)]="usuarioSelecionado.username" required>
+                        </div>
+                        <!-- <div class="mb-3">
+                            <label for="editPassword" class="form-label">Nova Senha</label>
+                            <input type="password" id="editPassword" name="editPassword" class="form-control" [(ngModel)]="usuarioSelecionado.password">
+                        </div> -->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="cancelarEdicao()">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="atualizarUsuario()" [disabled]="!usuarioSelecionado?.username">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

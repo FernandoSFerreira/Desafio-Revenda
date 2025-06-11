@@ -1,66 +1,138 @@
 <div class="container mt-4">
     <h1>Gerenciamento de Revendas</h1>
 
+    <!-- Debug: Mostrar quantos revendas foram carregados -->
+    <div class="alert alert-info" *ngIf="revendas.length === 0">
+        Nenhum revenda encontrado. Verifique a conexão com a API.
+    </div>
+    <div class="alert alert-success" *ngIf="revendas.length > 0">
+        {{ revendas.length }} revenda(s) carregado(s) com sucesso.
+    </div>
+
+    <!-- Botão Adicionar -->
     <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#adicionarRevendaModal">
         Adicionar Revenda
     </button>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>CNPJ</th>
-                <th>Nome Fantasia</th>
-                <th>Razão Social</th>
-                <th>Email</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let revenda of revendas">
-                <td>{{ revenda.id }}</td>
-                <td>{{ revenda.cnpj }}</td>
-                <td>{{ revenda.nomeFantasia }}</td>
-                <td>{{ revenda.razaoSocial }}</td>
-                <td>{{ revenda.email }}</td>
-                <td>
-                    <button type="button" class="btn btn-sm btn-info" (click)="selecionarRevendaParaEdicao(revenda)">Editar</button>
-                    <button type="button" class="btn btn-sm btn-danger" (click)="excluirRevenda(revenda.id)">Excluir</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <!-- Tabela de Revendas -->
+    <div class="table-responsive">
+        <table class="table table-striped" *ngIf="revendas.length > 0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>CNPJ</th>
+                    <th>Razão Social</th>
+                    <th>Nome Fantasia</th>
+                    <th>Email</th>
+                    <th>Contato</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let revenda of revendas; trackBy: trackByRevendaId">
+                    <td>{{ revenda.id }}</td>
+                    <td>{{ revenda.cnpj }}</td>
+                    <td>{{ revenda.razaoSocial }}</td>
+                    <td>{{ revenda.nomeFantasia }}</td>
+                    <td>{{ revenda.email }}</td>
+                    <td>{{ revenda.nomeContatoPrincipal || 'N/A' }}</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-info" (click)="selecionarRevendaParaEdicao(revenda)">
+                                Editar
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" (click)="excluirRevenda(revenda.id)">
+                                Excluir
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
+    <!-- Modal Adicionar Revenda -->
     <div class="modal fade" id="adicionarRevendaModal" tabindex="-1" aria-labelledby="adicionarRevendaModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="adicionarRevendaModalLabel">Adicionar Nova Revenda</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form #adicionarRevendaForm="ngForm">
                         <div class="mb-3">
-                            <label for="cnpj" class="form-label">CNPJ</label>
-                            <input type="text" id="cnpj" name="cnpj" class="form-control" [(ngModel)]="novaRevenda.cnpj">
+                            <label for="cnpj" class="form-label">CNPJ *</label>
+                            <input type="text" id="cnpj" name="cnpj" class="form-control" [(ngModel)]="novaRevenda.cnpj" required>
                         </div>
                         <div class="mb-3">
-                            <label for="nomeFantasia" class="form-label">Nome Fantasia</label>
-                            <input type="text" id="nomeFantasia" name="nomeFantasia" class="form-control" [(ngModel)]="novaRevenda.nomeFantasia">
+                            <label for="razaoSocial" class="form-label">Razão Social *</label>
+                            <input type="text" id="razaoSocial" name="razaoSocial" class="form-control" [(ngModel)]="novaRevenda.razaoSocial" required>
                         </div>
                         <div class="mb-3">
-                            <label for="razaoSocial" class="form-label">Razão Social</label>
-                            <input type="text" id="razaoSocial" name="razaoSocial" class="form-control" [(ngModel)]="novaRevenda.razaoSocial">
+                            <label for="nomeFantasia" class="form-label">Nome Fantasia *</label>
+                            <input type="text" id="nomeFantasia" name="nomeFantasia" class="form-control" [(ngModel)]="novaRevenda.nomeFantasia" required>
                         </div>
                         <div class="mb-3">
-                            <label for="email" class="form-label">E-mail</label>
-                            <input type="email" id="email" name="email" class="form-control" [(ngModel)]="novaRevenda.email">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" id="email" name="email" class="form-control" [(ngModel)]="novaRevenda.email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nomeContatoPrincipal" class="form-label">Nome do Contato Principal</label>
+                            <input type="text" id="nomeContatoPrincipal" name="nomeContatoPrincipal" class="form-control" [(ngModel)]="novaRevenda.nomeContatoPrincipal">
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" (click)="adicionarRevenda()">Adicionar</button>
+                    <button type="button" class="btn btn-primary" (click)="adicionarRevenda()" [disabled]="!novaRevenda.cnpj || !novaRevenda.razaoSocial || !novaRevenda.nomeFantasia || !novaRevenda.email">
+                        Adicionar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Editar Revenda -->
+    <div class="modal fade" id="editarRevendaModal" tabindex="-1" aria-labelledby="editarRevendaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editarRevendaModalLabel">Editar Revenda</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" *ngIf="revendaSelecionada">
+                    <div class="alert alert-info">
+                        <small>Editando revenda ID: {{ revendaSelecionada.id }}</small>
+                    </div>
+                    <form #editarRevendaForm="ngForm">
+                        <div class="mb-3">
+                            <label for="editCnpj" class="form-label">CNPJ *</label>
+                            <input type="text" id="editCnpj" name="editCnpj" class="form-control" [(ngModel)]="revendaSelecionada.cnpj" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editRazaoSocial" class="form-label">Razão Social *</label>
+                            <input type="text" id="editRazaoSocial" name="editRazaoSocial" class="form-control" [(ngModel)]="revendaSelecionada.razaoSocial" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editNomeFantasia" class="form-label">Nome Fantasia *</label>
+                            <input type="text" id="editNomeFantasia" name="editNomeFantasia" class="form-control" [(ngModel)]="revendaSelecionada.nomeFantasia" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEmail" class="form-label">Email *</label>
+                            <input type="email" id="editEmail" name="editEmail" class="form-control" [(ngModel)]="revendaSelecionada.email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editNomeContatoPrincipal" class="form-label">Nome do Contato Principal</label>
+                            <input type="text" id="editNomeContatoPrincipal" name="editNomeContatoPrincipal" class="form-control" [(ngModel)]="revendaSelecionada.nomeContatoPrincipal">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="cancelarEdicao()">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="atualizarRevenda()" [disabled]="!revendaSelecionada?.cnpj || !revendaSelecionada?.razaoSocial || !revendaSelecionada?.nomeFantasia || !revendaSelecionada?.email">
+                        Salvar Alterações
+                    </button>
                 </div>
             </div>
         </div>
